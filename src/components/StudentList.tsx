@@ -2,6 +2,7 @@
 
 import { Paper, Table, Badge, Group, Text, ActionIcon } from '@mantine/core';
 import { Eye, MoreHorizontal } from 'lucide-react';
+import Link from 'next/link';
 
 interface StudentData {
   id: string;
@@ -36,9 +37,14 @@ export function StudentList({ students }: { students: StudentData[] }) {
       <Table.Td style={{ fontFamily: 'monospace' }}>{student.balance}</Table.Td>
       <Table.Td>
         <Group gap={0} justify="flex-end">
-          <ActionIcon variant="subtle" color="gray">
-            <Eye size={16} />
-          </ActionIcon>
+          <ActionIcon 
+  variant="subtle" 
+  color="gray" 
+  component={Link} 
+  href={`/students/${student.id}`}
+>
+  <Eye size={16} />
+</ActionIcon>
           <ActionIcon variant="subtle" color="gray">
             <MoreHorizontal size={16} />
           </ActionIcon>
