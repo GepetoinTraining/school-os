@@ -1,0 +1,250 @@
+// SCHOOL-OS: The Source of Time & Truth
+// Database Provider: PostgreSQL (Vercel Production Mode)
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  // Vercel will automatically inject the POSTGRES_PRISMA_URL env var
+  url      = env("POSTGRES_PRISMA_URL") 
+  // For direct connection (migrations/seed)
+  directUrl = env("POSTGRES_URL_NON_POOLING")
+}
+
+// --- IDENTITY & ACCESS (The "Skin") ---
+
+enum UserRole {
+  STUDENT
+  TEACHER
+  STAFF
+  GUARDIAN
+  ADMIN
+  SYSTEM_DAEMON // For the AI Agent
+}
+
+model User {
+  id            String    @id @default(uuid())
+  email         String    @unique
+  taxId         String?   // CPF/CNPJ
+  role          UserRole
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Profiles (1:1 Relationships)
+  studentProfile Student?
+  teacherProfile Teacher?
+  staffProfile   Staff?
+
+  // System Interactions
+  logs          AuditLog[]
+  chatSessions  ChatSession[] // The Meta-Layer: Learning from the Architects
+}
+
+// --- THE HUMAN NODE (Student 360) ---
+
+model Student {
+  id                String   @id @default(uuid())
+  userId            String   @unique
+  user              User     @relation(fields: [userId], references: [id])
+  
+  // The 4 Pillars
+  academicGPA       Float    @default(0.0)
+  financialBalance  Decimal  @default(0.00)
+  attendanceRate    Float    @default(100.0)
+  npsScore          Int      @default(0) // 0-10
+
+  // The Network (Social Capital)
+  referralCode      String   @unique
+  referredBy        String?  // Recursive relation to another Student
+  referrer          Student? @relation("ReferralTree", fields: [referredBy], references: [id])
+  referrals         Student[] @relation("ReferralTree")
+
+  // The Symbiosis (AI Link)
+  shardId           String?  @unique
+  shard             AIShard? 
+
+  // Learning Data
+  varkProfile       CognitiveProfile?
+  flowLogs          FlowLog[]
+  enrollments       Enrollment[]
+  
+  @@index([referredBy])
+}
+
+// --- THE SYMBIOTIC ENGINE (The "Brain") ---
+
+model AIShard {
+  id                String   @id @default(uuid())
+  studentId         String   @unique
+  student           Student  @relation(fields: [studentId], references: [id])
+  
+  version           String   // e.g., "v4.2-visual-bias"
+  genesisDate       DateTime @default(now())
+  lastResonanceSync DateTime
+  
+  // Neural Weights (Stored as JSONB for flexibility)
+  cognitiveWeights  Json     // { risk_tolerance: 0.5, visual_bias: 0.8 }
+  
+  // Security Protocol
+  isVaulted         Boolean  @default(false)
+  vaultKeyHash      String?  // Encrypted key for cold storage
+  
+  resonanceHistory  ResonanceLog[]
+}
+
+model ResonanceLog {
+  id        String   @id @default(uuid())
+  shardId   String
+  shard     AIShard  @relation(fields: [shardId], references: [id])
+  score     Float    // 0-100 Sync Score
+  delta     Float    // Change from last sync
+  timestamp DateTime @default(now())
+}
+
+// --- THE LEDGER (The "Heart") ---
+
+enum TransactionType {
+  INCOME
+  EXPENSE
+}
+
+enum TaxRegime {
+  ISS  // Service (Tuition)
+  ICMS // Product (Uniform)
+}
+
+model LedgerTransaction {
+  id                String          @id @default(uuid())
+  timestamp         DateTime        @default(now())
+  description       String
+  amount            Decimal         @db.Decimal(10, 2)
+  type              TransactionType
+  
+  // Tax Compliance (Lucro Real)
+  taxRegime         TaxRegime?
+  taxBasis          Decimal?
+  
+  // Cost Accounting
+  costCenterId      String?
+  costCenter        CostCenter?     @relation(fields: [costCenterId], references: [id])
+  
+  // Commission Logic (Split)
+  commissionReceiverId String?
+  commissionReceiver   Staff?       @relation(fields: [commissionReceiverId], references: [id])
+  commissionAmount     Decimal?
+}
+
+model CostCenter {
+  id           String              @id @default(uuid())
+  name         String              // e.g. "Pedagogical", "Maintenance"
+  monthlyBudget Decimal
+  transactions LedgerTransaction[]
+}
+
+// --- HUMAN CAPITAL & R&D (The "Muscle") ---
+
+enum TeacherArchetype {
+  ACADEMIC  // Structure
+  CREATIVE  // Story
+  COACH     // Motivation
+}
+
+model Teacher {
+  id              String   @id @default(uuid())
+  userId          String   @unique
+  user            User     @relation(fields: [userId], references: [id])
+  
+  archetype       TeacherArchetype
+  hourlyRate      Decimal
+  
+  // R&D Output
+  prepLogs        PrepLog[]
+  coursesTaught   Course[]
+}
+
+model Staff {
+  id              String   @id @default(uuid())
+  userId          String   @unique
+  user            User     @relation(fields: [userId], references: [id])
+  role            String   // "Sales Rep", "Director"
+  
+  // Performance
+  commissions     LedgerTransaction[]
+}
+
+// --- PEDAGOGY & ASSETS (The "Product") ---
+
+model Course {
+  id              String   @id @default(uuid())
+  title           String
+  basePrice       Decimal
+  
+  // R&D Links
+  teacherId       String
+  teacher         Teacher  @relation(fields: [teacherId], references: [id])
+  
+  enrollments     Enrollment[]
+}
+
+model Enrollment {
+  id        String   @id @default(uuid())
+  studentId String
+  student   Student  @relation(fields: [studentId], references: [id])
+  courseId  String
+  course    Course   @relation(fields: [courseId], references: [id])
+  status    String   // "Active", "Completed", "Dropped"
+}
+
+model PrepLog {
+  id          String   @id @default(uuid())
+  teacherId   String
+  teacher     Teacher  @relation(fields: [teacherId], references: [id])
+  hours       Float
+  cost        Decimal  // Calculated (Hours * Rate)
+  leverage    Float?   // The "ROI" of this prep
+  createdAt   DateTime @default(now())
+}
+
+model FlowLog {
+  id          String   @id @default(uuid())
+  studentId   String
+  student     Student  @relation(fields: [studentId], references: [id])
+  score       Float
+  timeTaken   Int      // Seconds
+  state       String   // "Flow", "Anxiety", "Boredom"
+  timestamp   DateTime @default(now())
+}
+
+model CognitiveProfile {
+  id          String   @id @default(uuid())
+  studentId   String   @unique
+  student     Student  @relation(fields: [studentId], references: [id])
+  
+  visual      Float    // 0-100
+  aural       Float
+  readWrite   Float
+  kinesthetic Float
+  updatedAt   DateTime @updatedAt
+}
+
+// --- META-LAYER (System Learning) ---
+
+model ChatSession {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  topic     String
+  summary   String   @db.Text // The "Seed" for the next session
+  createdAt DateTime @default(now())
+}
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  action    String
+  metadata  Json?
+  timestamp DateTime @default(now())
+}
