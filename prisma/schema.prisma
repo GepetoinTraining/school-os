@@ -5,13 +5,6 @@ generator client {
   provider = "prisma-client-js"
 }
 
-datasource db {
-  provider = "postgresql"
-  // Vercel will automatically inject the POSTGRES_PRISMA_URL env var
-  url      = env("POSTGRES_PRISMA_URL") 
-  // For direct connection (migrations/seed)
-  directUrl = env("POSTGRES_URL_NON_POOLING")
-}
 
 // --- IDENTITY & ACCESS (The "Skin") ---
 
