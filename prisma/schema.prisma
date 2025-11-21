@@ -7,10 +7,6 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  // Vercel automatically injects this when you link a Postgres store
-  url      = env("POSTGRES_PRISMA_URL") 
-  // Used for migrations and direct connections
-  directUrl = env("POSTGRES_URL_NON_POOLING")
 }
 
 // --- IDENTITY & ACCESS ---
