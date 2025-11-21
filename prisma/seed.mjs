@@ -1,13 +1,20 @@
-const { PrismaClient } = require('@prisma/client');
+import { PrismaClient } from '@prisma/client';
+import { Pool } from 'pg';
+import { PrismaPg } from '@prisma/adapter-pg';
 
-// Initialize the Client (The Truth Layer)
-const prisma = new PrismaClient();
+const connectionString = process.env.DATABASE_URL;
+
+// 1. Initialize the Adapter (Biological Link)
+const pool = new Pool({ connectionString });
+const adapter = new PrismaPg(pool);
+
+// 2. Initialize the Client with the Adapter
+const prisma = new PrismaClient({ adapter });
 
 async function main() {
   console.log('🌱 Seeding the Metasystem...');
 
   // --- 1. CLEAR THE BOARD ---
-  // We clean slate to ensure atomic integrity during dev cycles
   await prisma.enrollment.deleteMany();
   await prisma.resonanceLog.deleteMany();
   await prisma.aIShard.deleteMany();
@@ -20,7 +27,7 @@ async function main() {
 
   // --- 2. THE ACTORS (Users) ---
   
-  // Student 1: Alice (The Academic Anchor)
+  // Student 1: Alice
   const aliceUser = await prisma.user.create({
     data: {
       email: 'alice@schoolos.local',
@@ -40,7 +47,7 @@ async function main() {
     }
   });
 
-  // Student 2: Bruno (The Social Catalyst / High Risk)
+  // Student 2: Bruno
   const brunoUser = await prisma.user.create({
     data: {
       email: 'bruno@schoolos.local',
@@ -48,11 +55,10 @@ async function main() {
       studentProfile: {
         create: {
           referralCode: 'BRUNO_VIP',
-          academicGPA: 5.8, // Risk
-          financialBalance: -1500.00, // Debt
+          academicGPA: 5.8,
+          financialBalance: -1500.00,
           attendanceRate: 72.0,
           npsScore: 7,
-          // Bruno referred Alice (Networking) - Complex relation update needed typically, keeping simple for seed
           varkProfile: {
             create: { visual: 85, aural: 15, readWrite: 20, kinesthetic: 80 }
           }
@@ -61,8 +67,7 @@ async function main() {
     }
   });
 
-  // Teacher 1: Prof. Julia (The Hidden Gem)
-  // High NPS, Low Efficiency (Manual Prep)
+  // Teacher 1: Prof. Julia
   const juliaUser = await prisma.user.create({
     data: {
       email: 'julia@schoolos.local',
@@ -73,7 +78,7 @@ async function main() {
           hourlyRate: 35.00,
           prepLogs: {
             create: [
-              { hours: 5.0, cost: 175.00, leverage: 1.2 }, // Low leverage prep
+              { hours: 5.0, cost: 175.00, leverage: 1.2 },
               { hours: 4.0, cost: 140.00, leverage: 1.5 }
             ]
           }
@@ -82,8 +87,7 @@ async function main() {
     }
   });
 
-  // Teacher 2: Prof. Elena (The Rockstar)
-  // High Cost, Massive Leverage
+  // Teacher 2: Prof. Elena
   const elenaUser = await prisma.user.create({
     data: {
       email: 'elena@schoolos.local',
@@ -94,7 +98,7 @@ async function main() {
           hourlyRate: 60.00,
           prepLogs: {
             create: [
-              { hours: 2.0, cost: 120.00, leverage: 8.5 }, // Massive leverage
+              { hours: 2.0, cost: 120.00, leverage: 8.5 },
             ]
           }
         }
@@ -105,26 +109,22 @@ async function main() {
   // --- 3. THE SYMBIOSIS (Shards) ---
 
   // Give Bruno his Shard
-  // Note: We use a mock UUID for the shard to simulate the Genesis Protocol
-  await prisma.aIShard.create({
-    data: {
-      studentId: brunoUser.studentProfile ? (await prisma.student.findUnique({where: {userId: brunoUser.id}})).id : '', // Fetch ID dynamically in real app
-      // For seeding simplicity, we assume the create above worked and we'd query it, 
-      // but let's attach it via nested write logic usually.
-      // Re-querying to be safe:
-      student: { connect: { userId: brunoUser.id } },
-      version: 'v1.0_untrained',
-      lastResonanceSync: new Date(),
-      cognitiveWeights: { risk_tolerance: 0.9, social_connectivity: 0.95 }, // High risk/social
-      isVaulted: false
-    }
-  });
+  // We fetch the student ID reliably now
+  const brunoStudent = await prisma.student.findUnique({where: {userId: brunoUser.id}});
+  
+  if (brunoStudent) {
+      await prisma.aIShard.create({
+        data: {
+          studentId: brunoStudent.id,
+          version: 'v1.0_untrained',
+          lastResonanceSync: new Date(),
+          cognitiveWeights: { risk_tolerance: 0.9, social_connectivity: 0.95 },
+          isVaulted: false
+        }
+      });
+  }
 
-  console.log('🌱 Database seeded with Archetypes:');
-  console.log('   - Alice (Academic)');
-  console.log('   - Bruno (Social Node)');
-  console.log('   - Prof. Julia (Creative)');
-  console.log('   - Prof. Elena (Academic)');
+  console.log('🌱 Database seeded with Archetypes.');
 }
 
 main()
