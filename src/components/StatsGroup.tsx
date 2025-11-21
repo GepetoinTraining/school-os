@@ -1,35 +1,50 @@
-'use client';
-
 import { Group, Paper, SimpleGrid, Text, ThemeIcon } from '@mantine/core';
-import { ArrowUpRight, ArrowDownRight, Wallet, Users, Activity } from 'lucide-react';
+import { ArrowUpRight, ArrowDownRight, Wallet, Users, Activity, LucideIcon } from 'lucide-react';
 
-const stats = [
-  { 
-    title: 'Monthly Recurring Revenue', 
-    value: 'R$ 42.500', 
-    diff: 12, 
-    icon: Wallet,
-    note: 'Lucro Real' 
-  },
-  { 
-    title: 'Active Human Nodes', 
-    value: '142', 
-    diff: 4, 
-    icon: Users,
-    note: 'Students Enrolled'
-  },
-  { 
-    title: 'Avg. Resonance Score', 
-    value: '8.4', 
-    diff: -2, 
-    icon: Activity,
-    note: 'AI/Student Sync'
-  },
-];
+// Define the shape of the data we expect
+interface StatData {
+  title: string;
+  value: string;
+  diff: number;
+  icon: LucideIcon;
+  note: string;
+}
 
-export function StatsGroup() {
+interface StatsGroupProps {
+  data: {
+    financial: string; // Pre-formatted currency string
+    students: number;
+    resonance: number;
+  };
+}
+
+export function StatsGroup({ data }: StatsGroupProps) {
+  const stats: StatData[] = [
+    { 
+      title: 'Monthly Recurring Revenue', 
+      value: data.financial, 
+      diff: 0, // We'll calculate real diffs later (Phase 2)
+      icon: Wallet,
+      note: 'Lucro Real (Cash Basis)' 
+    },
+    { 
+      title: 'Active Human Nodes', 
+      value: data.students.toString(), 
+      diff: 0, 
+      icon: Users,
+      note: 'Students Enrolled'
+    },
+    { 
+      title: 'Avg. Resonance Score', 
+      value: data.resonance.toFixed(1), 
+      diff: 0, 
+      icon: Activity,
+      note: 'AI/Student Sync'
+    },
+  ];
+
   const statsItems = stats.map((stat) => {
-    const DiffIcon = stat.diff > 0 ? ArrowUpRight : ArrowDownRight;
+    const DiffIcon = stat.diff >= 0 ? ArrowUpRight : ArrowDownRight;
     const Icon = stat.icon;
 
     return (
@@ -47,9 +62,9 @@ export function StatsGroup() {
           <Text fw={700} size="2xl" lh={1}>
             {stat.value}
           </Text>
-          <Text c={stat.diff > 0 ? 'teal' : 'red'} size="sm" fw={500} lh={1}>
+          <Text c={stat.diff >= 0 ? 'teal' : 'red'} size="sm" fw={500} lh={1}>
             <span>{stat.diff}%</span>
-            <DiffIcon size={12} style={{ marginLeft: 4 }} />
+            <DiffIcon size={12} style={{QL: '4px'}} />
           </Text>
         </Group>
 

@@ -17,9 +17,9 @@ I. Immediate Priorities (The Next 48 Hours)
 
 [ ] Assemble Components: Take the React artifacts (v1-v17) and componentize them into a shared /components folder.
 
-[ ] The Shell: Build the SchoolOS.jsx sidebar and layout shell to host the modules.
+[x] The Shell: Build the SchoolOS.jsx sidebar and layout shell to host the modules.
 
-[ ] The Dashboard: Implement the "Cockpit" view (Financials + Enrollment) as the landing page.
+[x] The Dashboard: Implement the "Cockpit" view (Financials + Enrollment) as the landing page.
 
 3. The Franchise Shield (Data Ops)
 
