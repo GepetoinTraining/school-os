@@ -1,13 +1,11 @@
-'usexcute client';
+'use client';
 
-import { AppShell, Burger, Group, NavLink, Text, ThemeIcon, rem } from '@mantine/core';
+import { AppShell, Burger, Group, NavLink, Text, ThemeIcon } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { 
-  IcHQ: IconDashboard, // Mapping generic icons if specific ones fail, but using standard lucide names below
   LayoutDashboard, 
   Users, 
   Wallet, 
-  KpBrain as Brain, // Fallback if BrainCircuit not found, checking Lucide...
   BrainCircuit,
   Network,
   Settings
