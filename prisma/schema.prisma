@@ -5,8 +5,15 @@ generator client {
   provider = "prisma-client-js"
 }
 
+datasource db {
+  provider = "postgresql"
+  // Vercel automatically injects this when you link a Postgres store
+  url      = env("POSTGRES_PRISMA_URL") 
+  // Used for migrations and direct connections
+  directUrl = env("POSTGRES_URL_NON_POOLING")
+}
 
-// --- IDENTITY & ACCESS (The "Skin") ---
+// --- IDENTITY & ACCESS ---
 
 enum UserRole {
   STUDENT
@@ -14,51 +21,45 @@ enum UserRole {
   STAFF
   GUARDIAN
   ADMIN
-  SYSTEM_DAEMON // For the AI Agent
+  SYSTEM_DAEMON
 }
 
 model User {
   id            String    @id @default(uuid())
   email         String    @unique
-  taxId         String?   // CPF/CNPJ
+  taxId         String?   
   role          UserRole
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
-  // Profiles (1:1 Relationships)
   studentProfile Student?
   teacherProfile Teacher?
   staffProfile   Staff?
 
-  // System Interactions
   logs          AuditLog[]
-  chatSessions  ChatSession[] // The Meta-Layer: Learning from the Architects
+  chatSessions  ChatSession[]
 }
 
-// --- THE HUMAN NODE (Student 360) ---
+// --- THE HUMAN NODE ---
 
 model Student {
   id                String   @id @default(uuid())
   userId            String   @unique
   user              User     @relation(fields: [userId], references: [id])
   
-  // The 4 Pillars
   academicGPA       Float    @default(0.0)
-  financialBalance  Decimal  @default(0.00)
+  financialBalance  Decimal  @default(0.00) @db.Decimal(10, 2)
   attendanceRate    Float    @default(100.0)
-  npsScore          Int      @default(0) // 0-10
+  npsScore          Int      @default(0)
 
-  // The Network (Social Capital)
   referralCode      String   @unique
-  referredBy        String?  // Recursive relation to another Student
+  referredBy        String?
   referrer          Student? @relation("ReferralTree", fields: [referredBy], references: [id])
   referrals         Student[] @relation("ReferralTree")
 
-  // The Symbiosis (AI Link)
   shardId           String?  @unique
   shard             AIShard? 
 
-  // Learning Data
   varkProfile       CognitiveProfile?
   flowLogs          FlowLog[]
   enrollments       Enrollment[]
@@ -66,23 +67,21 @@ model Student {
   @@index([referredBy])
 }
 
-// --- THE SYMBIOTIC ENGINE (The "Brain") ---
+// --- THE SYMBIOTIC ENGINE ---
 
 model AIShard {
   id                String   @id @default(uuid())
   studentId         String   @unique
   student           Student  @relation(fields: [studentId], references: [id])
   
-  version           String   // e.g., "v4.2-visual-bias"
+  version           String
   genesisDate       DateTime @default(now())
   lastResonanceSync DateTime
   
-  // Neural Weights (Stored as JSONB for flexibility)
-  cognitiveWeights  Json     // { risk_tolerance: 0.5, visual_bias: 0.8 }
+  cognitiveWeights  Json
   
-  // Security Protocol
   isVaulted         Boolean  @default(false)
-  vaultKeyHash      String?  // Encrypted key for cold storage
+  vaultKeyHash      String?
   
   resonanceHistory  ResonanceLog[]
 }
@@ -91,12 +90,12 @@ model ResonanceLog {
   id        String   @id @default(uuid())
   shardId   String
   shard     AIShard  @relation(fields: [shardId], references: [id])
-  score     Float    // 0-100 Sync Score
-  delta     Float    // Change from last sync
+  score     Float
+  delta     Float
   timestamp DateTime @default(now())
 }
 
-// --- THE LEDGER (The "Heart") ---
+// --- THE LEDGER ---
 
 enum TransactionType {
   INCOME
@@ -104,8 +103,8 @@ enum TransactionType {
 }
 
 enum TaxRegime {
-  ISS  // Service (Tuition)
-  ICMS // Product (Uniform)
+  ISS
+  ICMS
 }
 
 model LedgerTransaction {
@@ -115,15 +114,12 @@ model LedgerTransaction {
   amount            Decimal         @db.Decimal(10, 2)
   type              TransactionType
   
-  // Tax Compliance (Lucro Real)
   taxRegime         TaxRegime?
   taxBasis          Decimal?
   
-  // Cost Accounting
   costCenterId      String?
   costCenter        CostCenter?     @relation(fields: [costCenterId], references: [id])
   
-  // Commission Logic (Split)
   commissionReceiverId String?
   commissionReceiver   Staff?       @relation(fields: [commissionReceiverId], references: [id])
   commissionAmount     Decimal?
@@ -131,17 +127,17 @@ model LedgerTransaction {
 
 model CostCenter {
   id           String              @id @default(uuid())
-  name         String              // e.g. "Pedagogical", "Maintenance"
+  name         String
   monthlyBudget Decimal
   transactions LedgerTransaction[]
 }
 
-// --- HUMAN CAPITAL & R&D (The "Muscle") ---
+// --- HUMAN CAPITAL ---
 
 enum TeacherArchetype {
-  ACADEMIC  // Structure
-  CREATIVE  // Story
-  COACH     // Motivation
+  ACADEMIC
+  CREATIVE
+  COACH
 }
 
 model Teacher {
@@ -152,7 +148,6 @@ model Teacher {
   archetype       TeacherArchetype
   hourlyRate      Decimal
   
-  // R&D Output
   prepLogs        PrepLog[]
   coursesTaught   Course[]
 }
@@ -161,20 +156,18 @@ model Staff {
   id              String   @id @default(uuid())
   userId          String   @unique
   user            User     @relation(fields: [userId], references: [id])
-  role            String   // "Sales Rep", "Director"
+  role            String
   
-  // Performance
   commissions     LedgerTransaction[]
 }
 
-// --- PEDAGOGY & ASSETS (The "Product") ---
+// --- PEDAGOGY & ASSETS ---
 
 model Course {
   id              String   @id @default(uuid())
   title           String
   basePrice       Decimal
   
-  // R&D Links
   teacherId       String
   teacher         Teacher  @relation(fields: [teacherId], references: [id])
   
@@ -187,7 +180,7 @@ model Enrollment {
   student   Student  @relation(fields: [studentId], references: [id])
   courseId  String
   course    Course   @relation(fields: [courseId], references: [id])
-  status    String   // "Active", "Completed", "Dropped"
+  status    String
 }
 
 model PrepLog {
@@ -195,8 +188,8 @@ model PrepLog {
   teacherId   String
   teacher     Teacher  @relation(fields: [teacherId], references: [id])
   hours       Float
-  cost        Decimal  // Calculated (Hours * Rate)
-  leverage    Float?   // The "ROI" of this prep
+  cost        Decimal
+  leverage    Float?
   createdAt   DateTime @default(now())
 }
 
@@ -205,8 +198,8 @@ model FlowLog {
   studentId   String
   student     Student  @relation(fields: [studentId], references: [id])
   score       Float
-  timeTaken   Int      // Seconds
-  state       String   // "Flow", "Anxiety", "Boredom"
+  timeTaken   Int
+  state       String
   timestamp   DateTime @default(now())
 }
 
@@ -215,21 +208,21 @@ model CognitiveProfile {
   studentId   String   @unique
   student     Student  @relation(fields: [studentId], references: [id])
   
-  visual      Float    // 0-100
+  visual      Float
   aural       Float
   readWrite   Float
   kinesthetic Float
   updatedAt   DateTime @updatedAt
 }
 
-// --- META-LAYER (System Learning) ---
+// --- META-LAYER ---
 
 model ChatSession {
   id        String   @id @default(uuid())
   userId    String
   user      User     @relation(fields: [userId], references: [id])
   topic     String
-  summary   String   @db.Text // The "Seed" for the next session
+  summary   String   @db.Text
   createdAt DateTime @default(now())
 }
 
