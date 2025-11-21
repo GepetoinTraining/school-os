@@ -1,3 +1,5 @@
+'use client';
+
 import { Container, Group, Text, Button, ThemeIcon, Anchor } from '@mantine/core';
 import { BrainCircuit } from 'lucide-react';
 import Link from 'next/link';
