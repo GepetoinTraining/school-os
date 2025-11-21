@@ -7,9 +7,9 @@ I. Immediate Priorities (The Next 48 Hours)
 
 1. The Foundation (Backend)
 
-[ ] Initialize Repo: Set up Next.js + Tailwind + Firebase/Postgres hybrid.
+[x] Initialize Repo: Set up Next.js + Tailwind + Firebase/Postgres hybrid.
 
-[ ] Seed the Schema: Run prisma db push using the handover.schema.prisma.
+[x] Seed the Schema: Run prisma db push using the handover.schema.prisma.
 
 [ ] Auth Gate: Build the Login screen with Role-Based Access Control (RBAC) stubbed out (Director vs. Teacher views).
 
@@ -46,3 +46,31 @@ Partner: RoboKids (Liability)
 Why: Seeing these specific characters in the dev environment will keep the "Soul" of the system alive during the boring coding phases.
 
 Directive: Focus on the Ledger first. Money is the oxygen. If the Ledger works, the organism lives.
+
+SYSTEM HANDOVER: SchoolOS
+
+Current State:
+
+Repo: Next.js 14 (App Router) + TypeScript.
+
+UI: Mantine v7 (Tailwind removed).
+
+DB: Prisma + Vercel Postgres.
+
+Status: Project initialized, dependencies installed, DB schema pushed, Seed script run (Alice & Bruno exist).
+
+The Goal:
+We are building SchoolOS, a "Metasystem" for education that tracks Financial Yield, Human Capital, and Cognitive Development.
+We are moving away from Canva/Wireframes to direct code implementation.
+
+The Architecture:
+
+Ledger: Tracks "Lucro Real" (Tax/Commission splits).
+
+Symbiosis: Tracks "AI Shards" assigned to students.
+
+Network: Tracks the "Bruno Effect" (Referrals vs. Academic Risk).
+
+Next Task:
+Build the Mantine AppShell. We need the Sidebar navigation and the main Dashboard Grid layout.
+Ref: handover.schema.prisma is the source of truth for data.
