@@ -1,5 +1,6 @@
 import { Container, Title, Text, Button, Paper, Switch, Group, Stack, Divider } from '@mantine/core';
-import { ShieldAlert, Database, Server } from 'lucide-react';
+import { ShieldAlert, Database, Server, FileInput } from 'lucide-react';
+import { CsvImporter } from '@/components/CsvImporter';
 
 export const dynamic = 'force-dynamic';
 
@@ -8,6 +9,20 @@ export default function SettingsPage() {
     <Container size="xl" py="md">
       <Title order={2} mb="md">Configuration</Title>
       
+      {/* SECTION 1: MIGRATION */}
+      <Paper withBorder p="md" radius="md" mb="lg" bg="gray.0">
+        <Group mb="md">
+          <Database size={20} className="text-blue-600" />
+          <div>
+            <Text fw={700}>Data Ingestion (Migration)</Text>
+            <Text size="xs" c="dimmed">Map legacy franchise data (CSV) to SchoolOS Student Nodes.</Text>
+          </div>
+        </Group>
+        
+        <CsvImporter />
+      </Paper>
+
+      {/* SECTION 2: SECURITY */}
       <Paper withBorder p="md" radius="md" mb="lg">
         <Group mb="md">
           <ShieldAlert size={20} className="text-orange-500" />
@@ -30,6 +45,7 @@ export default function SettingsPage() {
         </Stack>
       </Paper>
 
+      {/* SECTION 3: OPERATIONS */}
       <Paper withBorder p="md" radius="md">
         <Group mb="md">
           <Server size={20} />
