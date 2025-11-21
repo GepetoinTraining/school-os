@@ -1,3 +1,5 @@
+'use client';
+
 import { Group, Paper, SimpleGrid, Text, ThemeIcon } from '@mantine/core';
 import { ArrowUpRight, ArrowDownRight, Wallet, Users, Activity, LucideIcon } from 'lucide-react';
 
