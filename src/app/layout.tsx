@@ -1,5 +1,6 @@
 import "@mantine/core/styles.css";
 import { MantineProvider, ColorSchemeScript } from "@mantine/core";
+import { SchoolOSShell } from '@/components/SchoolOSShell';
 
 export const metadata = {
   title: "SchoolOS",
@@ -17,7 +18,11 @@ export default function RootLayout({
         <ColorSchemeScript />
       </head>
       <body>
-        <MantineProvider>{children}</MantineProvider>
+        <MantineProvider>
+          <SchoolOSShell>
+            {children}
+          </SchoolOSShell>
+        </MantineProvider>
       </body>
     </html>
   );
