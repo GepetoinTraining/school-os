@@ -1,8 +1,8 @@
 import { prisma } from '@/lib/prisma';
-import { auth } from '@/auth'; // You need to export this from src/auth.ts
-import { Container, Title, Text, Group, Card, SimpleGrid, Button, ThemeIcon, Badge } from '@mantine/core';
-import { BrainCircuit, Wallet, GraduationCap, ArrowRight } from 'lucide-react';
-import Link from 'next/link';
+import { auth } from '@/auth';
+import { Container, Title, Text, Group, Card, SimpleGrid, Badge } from '@mantine/core';
+import { BrainCircuit, Wallet, GraduationCap } from 'lucide-react';
+import { LinkButton } from '@/components/LinkButton'; // <--- NEW IMPORT
 
 export const dynamic = 'force-dynamic';
 
@@ -12,7 +12,6 @@ export default async function StudentPortalPage() {
 
   if (!userEmail) return <div>Access Denied</div>;
 
-  // Fetch the "Self" Node
   const student = await prisma.student.findFirst({
     where: { user: { email: userEmail } },
     include: { 
@@ -62,9 +61,16 @@ export default async function StudentPortalPage() {
             Access your personal AI Shard for cognitive support and tutoring.
           </Text>
           
-          <Button component={Link} href={`/students/${student.id}/chat`} fullWidth mt="md" color="violet" variant="light">
+          {/* FIX: Using LinkButton to avoid serialization error */}
+          <LinkButton 
+            href={`/students/${student.id}/chat`} 
+            fullWidth 
+            mt="md" 
+            color="violet" 
+            variant="light"
+          >
             Open Interface
-          </Button>
+          </LinkButton>
         </Card>
 
         {/* 2. Financial Status */}

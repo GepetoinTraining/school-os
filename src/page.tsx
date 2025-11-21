@@ -1,6 +1,6 @@
-import { Container, Title, Text, Group, Button, Paper, Stack, ThemeIcon } from '@mantine/core';
+import { Container, Title, Text, Button, Paper, Stack, ThemeIcon } from '@mantine/core';
 import { ArrowRight, Building2, UserCheck } from 'lucide-react';
-import Link from 'next/link';
+import { LinkButton } from '@/components/LinkButton'; // <--- NEW IMPORT
 
 export default function GatewayPage() {
   return (
@@ -25,8 +25,7 @@ export default function GatewayPage() {
 
           <Stack gap="md">
             {/* Option A: The Insider */}
-            <Button 
-              component={Link} 
+            <LinkButton 
               href="/login" 
               fullWidth 
               size="lg" 
@@ -35,11 +34,10 @@ export default function GatewayPage() {
               justify="space-between"
             >
               I am a Member
-            </Button>
+            </LinkButton>
 
             {/* Option B: The Outsider */}
-            <Button 
-              component={Link} 
+            <LinkButton 
               href="/home" 
               fullWidth 
               size="lg" 
@@ -48,7 +46,7 @@ export default function GatewayPage() {
               justify="space-between"
             >
               I want to learn more
-            </Button>
+            </LinkButton>
           </Stack>
           
           <Text c="dimmed" size="xs" ta="center" mt="xl">

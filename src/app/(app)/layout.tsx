@@ -13,8 +13,12 @@ export default async function AppLayout({
     redirect('/login');
   }
 
+  // EXTRACT ROLE (Default to STUDENT if missing)
+  const userRole = (session.user as any).role || 'STUDENT';
+
+  // PASS IT DOWN
   return (
-    <SchoolOSShell>
+    <SchoolOSShell userRole={userRole}>
       {children}
     </SchoolOSShell>
   );
