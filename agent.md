@@ -73,3 +73,39 @@ The database is currently seeded with 4 Archetypes:
 ## 5. Technical Debt / Notes
 - **Prisma Engine:** We are forcing `engineType = "library"` to avoid Wasm/Edge errors and maintain data sovereignty.
 - **Type Safety:** Some `ts-expect-error` directives were removed in favor of explicit type casting (`as StudentWithUser`).
+
+# SYSTEM HANDOVER: SchoolOS v0.2 (The Exoskeleton)
+
+**Timestamp:** 2025-11-21 (Phase III Complete)
+**Status:** Structural Mitosis Complete (Public vs. Private Split)
+
+## 1. The New Architecture (Route Groups)
+We have successfully split the application into two distinct biological zones:
+- **(public)**: The Exoskeleton. accessible to the world. Contains the Landing Page, Courses, Enroll, and Live Map.
+- **(app)**: The Internal Organs. Protected by the "Membrane" (Middleware). Contains Dashboard, Students, Finance.
+
+## 2. Security & Identity
+- **Protocol:** "Bio-ID" (Email-only authentication).
+- **Middleware:** Split into `auth.config.ts` (Edge-safe) and `auth.ts` (Prisma-connected) to survive the Edge Runtime environment.
+- **Roles:** - `STUDENT` / `TEACHER`: Restricted access (Teachers -> `/flow`, Students -> Portal).
+    - `ADMIN`: Full Cockpit access.
+
+## 3. Module Status
+| Module | Status | URL | Notes |
+| :--- | :--- | :--- | :--- |
+| **Public Face** | 🟢 Live | `/` | Landing page with "Institutional" layout. |
+| **Admissions** | 🟢 Live | `/enroll` | Lead capture form (Commercial/TOF). |
+| **Live Pulse** | 🟢 Live | `/live-map` | Real-time visualization of Flow States. |
+| **Cockpit** | 🟢 Live | `/dashboard` | Now includes "Nervous System" (Flow) monitors. |
+| **Flow HUD** | 🟢 Live | `/flow` | Mobile-first teacher interface for logging states. |
+| **Ingestion** | 🟡 Ready | `/settings` | CSV Importer linked from Student Directory. |
+
+## 4. Critical Technical Notes (The "Mental Overload" Fixes)
+1. **Route Groups:** We used `(group)` folders to separate layouts. `src/app/(public)/layout.tsx` is the Institutional Shell; `src/app/(app)/layout.tsx` is the SchoolOS Shell.
+2. **Hydration:** We converted Public pages to `'use client'` to handle interactive navigation (Buttons/Links).
+3. **Seeding:** The database is seeded with 4 Archetypes (Alice, Bruno, Julia, Elena) on every build.
+
+## 5. Next Steps (Phase IV - The Cortex)
+1. **AI Shards:** Activate the `AIShard` model to actually process the `FlowLogs`.
+2. **Financial Engine:** Connect `LedgerTransaction` to real Stripe/Pix inputs.
+3. **Chat:** Build the `ChatSession` interface for Student <-> Shard communication.
