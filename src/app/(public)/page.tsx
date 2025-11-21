@@ -1,4 +1,6 @@
-import { Container, Title, Text, Button, Group, Paper, SimpleGrid, ThemeIcon } from '@mantine/core';
+'use client';
+
+import { Container, Title, Text, Button, Paper, SimpleGrid, ThemeIcon } from '@mantine/core';
 import { ArrowRight, BrainCircuit, ShieldCheck, Zap } from 'lucide-react';
 import Link from 'next/link';
 
