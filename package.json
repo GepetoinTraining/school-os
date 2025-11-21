@@ -16,6 +16,11 @@
     "postinstall": "prisma generate"
   },
   "dependencies": {
+    "@mantine/core": "latest",
+    "@mantine/hooks": "latest",
+    "@mantine/dates": "latest",
+    "@mantine/notifications": "latest",
+    "dayjs": "latest",
     "@prisma/client": "latest",
     "clsx": "latest",
     "date-fns": "latest",
@@ -27,19 +32,18 @@
     "react-dom": "latest",
     "react-hook-form": "latest",
     "recharts": "latest",
-    "tailwind-merge": "latest",
     "zod": "latest"
   },
   "devDependencies": {
     "@types/node": "latest",
     "@types/react": "latest",
     "@types/react-dom": "latest",
-    "autoprefixer": "^10.4.17",
     "eslint": "latest",
     "eslint-config-next": "latest",
-    "postcss": "^8.4.35",
+    "postcss": "latest",
+    "postcss-preset-mantine": "latest",
+    "postcss-simple-vars": "latest",
     "prisma": "latest",
-    "tailwindcss": "^3.4.1",
     "typescript": "latest"
   }
 }
