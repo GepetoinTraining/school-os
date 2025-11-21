@@ -64,7 +64,7 @@ export function StatsGroup({ data }: StatsGroupProps) {
           </Text>
           <Text c={stat.diff >= 0 ? 'teal' : 'red'} size="sm" fw={500} lh={1}>
             <span>{stat.diff}%</span>
-            <DiffIcon size={12} style={{QL: '4px'}} />
+            <DiffIcon size={12} />
           </Text>
         </Group>
 
