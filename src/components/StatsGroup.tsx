@@ -4,6 +4,7 @@ import { Group, Paper, SimpleGrid, Text, ThemeIcon } from '@mantine/core';
 import { ArrowUpRight, ArrowDownRight, Wallet, Users, Activity } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
+// Define the shape of the data we expect
 interface StatData {
   title: string;
   value: string;
@@ -25,7 +26,7 @@ export function StatsGroup({ data }: StatsGroupProps) {
     { 
       title: 'Monthly Recurring Revenue', 
       value: data.financial, 
-      diff: 0, 
+      diff: 0, // We'll calculate real diffs later (Phase 2)
       icon: Wallet,
       note: 'Lucro Real (Cash Basis)' 
     },
@@ -46,9 +47,8 @@ export function StatsGroup({ data }: StatsGroupProps) {
   ];
 
   const statsItems = stats.map((stat) => {
-    // Safely handle the icon component
-    const Icon = stat.icon;
     const DiffIcon = stat.diff >= 0 ? ArrowUpRight : ArrowDownRight;
+    const Icon = stat.icon;
 
     return (
       <Paper withBorder p="md" radius="md" key={stat.title}>
