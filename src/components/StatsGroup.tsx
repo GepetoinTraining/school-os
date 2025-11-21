@@ -1,9 +1,9 @@
 'use client';
 
 import { Group, Paper, SimpleGrid, Text, ThemeIcon } from '@mantine/core';
-import { ArrowUpRight, ArrowDownRight, Wallet, Users, Activity, LucideIcon } from 'lucide-react';
+import { ArrowUpRight, ArrowDownRight, Wallet, Users, Activity } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 
-// Define the shape of the data we expect
 interface StatData {
   title: string;
   value: string;
@@ -14,7 +14,7 @@ interface StatData {
 
 interface StatsGroupProps {
   data: {
-    financial: string; // Pre-formatted currency string
+    financial: string; 
     students: number;
     resonance: number;
   };
@@ -25,7 +25,7 @@ export function StatsGroup({ data }: StatsGroupProps) {
     { 
       title: 'Monthly Recurring Revenue', 
       value: data.financial, 
-      diff: 0, // We'll calculate real diffs later (Phase 2)
+      diff: 0, 
       icon: Wallet,
       note: 'Lucro Real (Cash Basis)' 
     },
@@ -46,8 +46,9 @@ export function StatsGroup({ data }: StatsGroupProps) {
   ];
 
   const statsItems = stats.map((stat) => {
-    const DiffIcon = stat.diff >= 0 ? ArrowUpRight : ArrowDownRight;
+    // Safely handle the icon component
     const Icon = stat.icon;
+    const DiffIcon = stat.diff >= 0 ? ArrowUpRight : ArrowDownRight;
 
     return (
       <Paper withBorder p="md" radius="md" key={stat.title}>
@@ -66,7 +67,7 @@ export function StatsGroup({ data }: StatsGroupProps) {
           </Text>
           <Text c={stat.diff >= 0 ? 'teal' : 'red'} size="sm" fw={500} lh={1}>
             <span>{stat.diff}%</span>
-            <DiffIcon size={12} />
+            <DiffIcon size={12} style={{ marginLeft: 4 }} />
           </Text>
         </Group>
 
