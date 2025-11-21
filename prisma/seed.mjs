@@ -15,12 +15,32 @@ async function main() {
   console.log('🌱 Seeding the Metasystem...');
 
   // --- 1. CLEAR THE BOARD ---
-  await prisma.enrollment.deleteMany();
+  // We must dissolve the tissue (Logs/Relations) before the organs (Users)
+  
+  // Level 3: The Logs & Transactions
+  await prisma.flowLog.deleteMany();
+  await prisma.prepLog.deleteMany(); // <-- The fix for your specific error
   await prisma.resonanceLog.deleteMany();
+  await prisma.enrollment.deleteMany();
+  await prisma.chatSession.deleteMany();
+  await prisma.auditLog.deleteMany();
+  await prisma.ledgerTransaction.deleteMany();
+
+  // Level 2: The Assets & Extensions
+  await prisma.course.deleteMany();
   await prisma.aIShard.deleteMany();
   await prisma.cognitiveProfile.deleteMany();
-  await prisma.student.deleteMany();
+  await prisma.costCenter.deleteMany();
+  
+  // Level 1: The Nodes (Actors)
+  // Note: We delete Students first to clear referral trees if possible, 
+  // though strict cyclic refs might require a raw SQL update to nullify first.
+  // For now, standard deletion order usually works if cascade is set or no cycles exist.
+  await prisma.student.deleteMany(); 
   await prisma.teacher.deleteMany();
+  await prisma.staff.deleteMany();
+
+  // Level 0: The Source (Identity)
   await prisma.user.deleteMany();
   
   console.log('🧹 Chaos cleared. Tabula Rasa.');
@@ -109,7 +129,6 @@ async function main() {
   // --- 3. THE SYMBIOSIS (Shards) ---
 
   // Give Bruno his Shard
-  // We fetch the student ID reliably now
   const brunoStudent = await prisma.student.findUnique({where: {userId: brunoUser.id}});
   
   if (brunoStudent) {
