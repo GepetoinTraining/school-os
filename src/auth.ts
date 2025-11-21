@@ -2,13 +2,14 @@ import NextAuth from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
 import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
+import { authConfig } from './auth.config';
 
-// Validation schema for the "Badge Scan"
 const SignInSchema = z.object({
   email: z.string().email(),
 });
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
+  ...authConfig,
   providers: [
     Credentials({
       name: 'SchoolOS Identity',
@@ -18,7 +19,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       authorize: async (credentials) => {
         const { email } = await SignInSchema.parseAsync(credentials);
         
-        // The "Bio-ID" Check: Does this node exist?
         const user = await prisma.user.findUnique({
           where: { email },
         });
@@ -27,28 +27,12 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           throw new Error("Identity not recognized.");
         }
 
-        // Return the Identity Artifact
         return {
           id: user.id,
           email: user.email,
-          name: user.role, // Mapping Role to Name for easy access in session
+          name: user.role, // Mapping Role to Name for easy Edge access
         };
       },
     }),
   ],
-  pages: {
-    signIn: '/login',
-  },
-  callbacks: {
-    async session({ session, token }) {
-      if (token.sub && session.user) {
-        session.user.id = token.sub;
-        // We stored the role in the 'name' field temporarily for efficiency
-        // Ideally, we'd extend the session type, but this keeps it lean.
-        // session.user.role = token.name 
-      }
-      return session;
-    },
-  },
-  secret: process.env.NEXTAUTH_SECRET,
 });
