@@ -1,8 +1,7 @@
 'use client';
 
-import { Container, Group, Text, Button, ThemeIcon, Anchor } from '@mantine/core';
-import { BrainCircuit } from 'lucide-react';
-import Link from 'next/link';
+import { PublicHeader } from '@/components/PublicHeader';
+import { Container, Group, Text, Anchor } from '@mantine/core';
 
 export default function PublicLayout({
   children,
@@ -10,49 +9,42 @@ export default function PublicLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-      {/* Institutional Header */}
-      <header style={{ borderBottom: '1px solid #eee', padding: '1rem 0' }}>
-        <Container size="xl">
-          <Group justify="space-between">
-            <Group gap="xs">
-              <ThemeIcon variant="light" size="lg" color="blue">
-                <BrainCircuit size={20} />
-              </ThemeIcon>
-              <Text fw={700} size="lg" style={{ letterSpacing: '-1px' }}>
-                SchoolOS
-              </Text>
-            </Group>
-            <Group>
-              <Button component={Link} href="/login" variant="subtle">
-                Access Portal
-              </Button>
-              <Button component={Link} href="/about" variant="outline" display="none">
-                About
-              </Button>
-            </Group>
-          </Group>
-        </Container>
-      </header>
+    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', backgroundColor: '#ffffff' }}>
+      
+      <PublicHeader />
 
-      {/* Main Content */}
-      <main style={{ flex: 1, backgroundColor: '#f8f9fa' }}>
+      <main style={{ flex: 1 }}>
         {children}
       </main>
 
-      {/* Institutional Footer */}
-      <footer style={{ borderTop: '1px solid #eee', padding: '2rem 0', backgroundColor: 'white' }}>
+      <footer style={{ borderTop: '1px solid #eee', padding: '3rem 0', backgroundColor: '#f8f9fa' }}>
         <Container size="xl">
-          <Group justify="space-between">
-             <Text size="xs" c="dimmed">
-                © 2025 SchoolOS Metasystem. Balneário Camboriú.
-             </Text>
-             <Group gap="lg">
-                <Anchor size="xs" c="dimmed" href="#">Privacy</Anchor>
-                <Anchor size="xs" c="dimmed" href="#">Terms</Anchor>
-                <Anchor size="xs" c="dimmed" href="#">Contact</Anchor>
+          <Group justify="space-between" align="start">
+             <div style={{ maxWidth: 300 }}>
+                <Text fw={700} mb="xs">SchoolOS Metasystem</Text>
+                <Text size="sm" c="dimmed" lh={1.6}>
+                    Empowering the next generation of nodes through symbiotic learning and biological resonance.
+                </Text>
+             </div>
+             
+             <Group gap={50} align="start">
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                    <Text fw={600} size="sm">Admissions</Text>
+                    <Anchor component="a" href="/courses" size="sm" c="dimmed">Courses</Anchor>
+                    <Anchor component="a" href="/enroll" size="sm" c="dimmed">Tuition</Anchor>
+                    <Anchor component="a" href="/enroll" size="sm" c="dimmed">Scholarships</Anchor>
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                    <Text fw={600} size="sm">Connect</Text>
+                    <Anchor component="a" href="/login" size="sm" c="dimmed">Portal</Anchor>
+                    <Anchor component="a" href="#" size="sm" c="dimmed">Instagram</Anchor>
+                    <Anchor component="a" href="#" size="sm" c="dimmed">WhatsApp</Anchor>
+                </div>
              </Group>
           </Group>
+          <Text size="xs" c="dimmed" mt="xl" ta="center">
+            © 2025 SchoolOS. Built in Balneário Camboriú.
+          </Text>
         </Container>
       </footer>
     </div>
