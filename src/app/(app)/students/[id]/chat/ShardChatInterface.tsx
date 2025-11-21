@@ -1,25 +1,27 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { Box, TextInput, ActionIcon, Group, Text, Avatar, LoadingOverlay } from '@mantine/core';
-import { Send, Bot, User as UserIcon } from 'lucide-react';
-import { sendShardMessage } from '@/app/actions/shards';
+import { Box, TextInput, ActionIcon, Group, Text, Avatar, Badge, Tooltip } from '@mantine/core';
+import { Send, Bot, User as UserIcon, Sparkles, ShieldAlert, Zap } from 'lucide-react';
+import { sendShardMessage } from '@/app/actions/shard';
 
 interface Message {
   id: string;
   role: 'user' | 'assistant';
   content: string;
   timestamp: Date;
+  mode?: string;
 }
 
 export function ShardChatInterface({ studentId, shardVersion }: { studentId: string, shardVersion: string }) {
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
+  const [currentMode, setCurrentMode] = useState<string>('SOCRATIC_TEACHER');
   const [messages, setMessages] = useState<Message[]>([
     {
         id: 'init',
         role: 'assistant',
-        content: `System Initialized. Running ${shardVersion}. Ready to sync.`,
+        content: `Neural Link Established. Version ${shardVersion}. I am reading your cognitive weights...`,
         timestamp: new Date()
     }
   ]);
@@ -48,6 +50,7 @@ export function ShardChatInterface({ studentId, shardVersion }: { studentId: str
         const response = await sendShardMessage(studentId, userMsg.content);
         if (response.success && response.data) {
             setMessages(prev => [...prev, { ...response.data, id: Date.now().toString() } as Message]);
+            if (response.data.mode) setCurrentMode(response.data.mode);
         }
     } catch (error) {
         console.error("Link disrupted", error);
@@ -56,14 +59,35 @@ export function ShardChatInterface({ studentId, shardVersion }: { studentId: str
     }
   };
 
+  // Dynamic UI based on Mode
+  const modeConfig = 
+    currentMode === 'SUPPORTIVE_COACH' ? { color: 'blue', icon: <ShieldAlert size={14}/>, label: 'SUPPORT MODE' } :
+    currentMode === 'STRICT_TUTOR' ? { color: 'orange', icon: <Zap size={14}/>, label: 'CHALLENGE MODE' } :
+    { color: 'violet', icon: <Sparkles size={14}/>, label: 'STANDARD MODE' };
+
   return (
     <>
+      {/* Status Header */}
+      <Box p="xs" bg="gray.0" style={{ borderBottom: '1px solid #eee' }}>
+        <Group justify="center">
+            <Tooltip label="The AI adapts its personality based on your Flow Logs">
+                <Badge 
+                    variant="light" 
+                    color={modeConfig.color} 
+                    leftSection={modeConfig.icon}
+                >
+                    {modeConfig.label}
+                </Badge>
+            </Tooltip>
+        </Group>
+      </Box>
+
       <Box flex={1} style={{ position: 'relative', overflow: 'hidden' }}>
         <div ref={viewport} style={{ height: '100%', overflowY: 'auto', padding: '1rem' }}>
             {messages.map((msg) => (
                 <Group key={msg.id} justify={msg.role === 'user' ? 'flex-end' : 'flex-start'} mb="md" align="flex-start">
                     {msg.role === 'assistant' && (
-                        <Avatar color="violet" radius="xl"><Bot size={18} /></Avatar>
+                        <Avatar color={modeConfig.color} radius="xl"><Bot size={18} /></Avatar>
                     )}
                     
                     <Box 
@@ -81,7 +105,7 @@ export function ShardChatInterface({ studentId, shardVersion }: { studentId: str
                     </Box>
 
                     {msg.role === 'user' && (
-                        <Avatar color="blue" radius="xl"><UserIcon size={18} /></Avatar>
+                        <Avatar color="gray" radius="xl"><UserIcon size={18} /></Avatar>
                     )}
                 </Group>
             ))}
@@ -101,7 +125,7 @@ export function ShardChatInterface({ studentId, shardVersion }: { studentId: str
             />
             <ActionIcon 
                 variant="filled" 
-                color="blue" 
+                color="black" 
                 size="lg" 
                 onClick={handleSend}
                 loading={loading}

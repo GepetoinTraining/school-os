@@ -3,53 +3,65 @@ import type { NextAuthConfig } from 'next-auth';
 export const authConfig = {
   pages: {
     signIn: '/login',
+    error: '/login', // Redirect back to login on error
   },
   callbacks: {
-    // This runs on the Edge to check if the token is valid
     authorized({ auth, request: { nextUrl } }) {
       const isLoggedIn = !!auth?.user;
-      const isOnDashboard = nextUrl.pathname === '/';
-      const isOnFinance = nextUrl.pathname.startsWith('/finance');
-      const isOnSettings = nextUrl.pathname.startsWith('/settings');
-      const isOnLogin = nextUrl.pathname.startsWith('/login');
+      const isOnDashboard = nextUrl.pathname.startsWith('/dashboard');
+      const isOnFlow = nextUrl.pathname.startsWith('/flow');
+      const isOnPortal = nextUrl.pathname.startsWith('/portal');
+      const isOnPublic = !nextUrl.pathname.startsWith('/(app)') && !nextUrl.pathname.startsWith('/api');
 
-      // 1. Redirect unauthenticated users to Login
-      if (isOnLogin) {
-        if (isLoggedIn) return Response.redirect(new URL('/', nextUrl));
-        return true; // Allow access to login page
-      }
-
+      // 1. Redirect Unauthenticated Users
       if (!isLoggedIn) {
-        return false; // Redirect to login
+        // Allow public routes (landing, enroll, live-map)
+        if (isOnPublic) return true;
+        return false; // Redirect to /login
       }
 
-      // 2. RBAC: Teacher Containment Protocol
-      // We use the 'name' field as a temporary carrier for the Role to avoid complex type extension in Alpha
-      const role = auth.user?.name; 
+      // 2. Role-Based Redirects (The Immune System)
+      const role = (auth.user as any).role || 'STUDENT'; // Default to safest role
 
+      // A. STUDENTS
+      if (role === 'STUDENT') {
+        if (isOnPortal) return true;
+        // Redirect Student to Portal if they try to go anywhere else
+        return Response.redirect(new URL('/portal', nextUrl));
+      }
+
+      // B. TEACHERS
       if (role === 'TEACHER') {
-         if (isOnFinance || isOnSettings || isOnDashboard) {
-            // Teachers belong in the Flow HUD
+        // Teachers belong in Flow or specific Student views
+        if (isOnFlow || nextUrl.pathname.startsWith('/students')) return true;
+        // Redirect Teacher to Flow HUD if they try to go to Finance/Dashboard
+        if (isOnDashboard || nextUrl.pathname.startsWith('/finance')) {
             return Response.redirect(new URL('/flow', nextUrl));
-         }
+        }
+        return true;
       }
-      
+
+      // C. ADMINS
+      if (role === 'ADMIN') {
+        return true; // Admins go everywhere
+      }
+
       return true;
     },
-    // Ensure the ID and Role are passed to the client/middleware
-    async session({ session, token }) {
-        if (token.sub && session.user) {
-            session.user.id = token.sub;
-        }
-        return session;
+    jwt({ token, user }) {
+      if (user) {
+        token.role = (user as any).role;
+        token.id = user.id;
+      }
+      return token;
     },
-    async jwt({ token, user }) {
-        if (user) {
-            token.sub = user.id;
-            token.name = user.name; // Persist the Role (mapped to name) into the token
-        }
-        return token;
-    }
+    session({ session, token }) {
+      if (session.user) {
+        (session.user as any).role = token.role;
+        (session.user as any).id = token.id;
+      }
+      return session;
+    },
   },
-  providers: [], // Providers are configured in auth.ts to avoid Edge incompatibility
+  providers: [], // Configured in auth.ts
 } satisfies NextAuthConfig;

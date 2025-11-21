@@ -109,3 +109,44 @@ We have successfully split the application into two distinct biological zones:
 1. **AI Shards:** Activate the `AIShard` model to actually process the `FlowLogs`.
 2. **Financial Engine:** Connect `LedgerTransaction` to real Stripe/Pix inputs.
 3. **Chat:** Build the `ChatSession` interface for Student <-> Shard communication.
+
+# SYSTEM HANDOVER: SchoolOS v0.3 (The Immune System)
+
+**Timestamp:** 2025-11-21 (Phase V Initiated)
+**Status:** Security Hardening & Role Isolation
+
+## 1. The Membrane (Middleware)
+- **Objective:** Strict routing based on `UserRole`.
+- **Rules:**
+    - `ADMIN` -> Access to All (Default: `/dashboard`)
+    - `TEACHER` -> Restricted to `/flow` and `/students` (Read-only). Blocked from `/finance` and `/settings`.
+    - `STUDENT` -> Restricted to `/portal`. Blocked from *everything* else.
+
+## 2. Missing Organs (To Build)
+- **Student Portal (`/portal`):** The dashboard for the Student (Grades, Financials, Chat Link).
+- **Teacher HUD (`/flow`):** The input interface for Flow Logs (Mobile-first).
+
+## 3. Known Issues
+- **404 on Login:** Caused by lack of specific redirects in `auth.config.ts`.
+- **Mock Data:** Need to ensure seeded users have correct Roles in `User` table.
+
+# SYSTEM HANDOVER: SchoolOS v0.4 (The Synapse)
+
+**Timestamp:** 2025-11-21 (Phase IV Initiated)
+**Status:** The Bio-Feedback Loop is Active.
+
+## 1. The Cortex Loop
+We have successfully implemented the **Cybernetic Control System**:
+1.  **Sensor:** Teacher HUD (`/flow`) -> Logs Biometric Data.
+2.  **Processor:** Synapse (`logFlow` + `cortex`) -> Updates `cognitiveWeights`.
+3.  **Actuator:** Shard Chat (`sendShardMessage`) -> Adapts "Personality" (Mode).
+
+## 2. The Modes
+- **SUPPORT MODE:** Triggered by Anxiety (<4). AI becomes a gentle coach.
+- **CHALLENGE MODE:** Triggered by Flow (>8). AI becomes a strict tutor.
+- **STANDARD MODE:** Default Socratic state.
+
+## 3. Next Steps (Phase V)
+- **Persistence:** Implement the `ChatMessage` model in Prisma to store history.
+- **LLM Integration:** Replace the simulation in `shard.ts` with OpenAI API / Vercel AI SDK.
+- **Real-World Test:** Deploy to Vercel and have `Prof. Julia` log a real class.
