@@ -3,47 +3,51 @@ import type { NextAuthConfig } from 'next-auth';
 export const authConfig = {
   pages: {
     signIn: '/login',
-    error: '/login', // Redirect back to login on error
+    error: '/login',
   },
   callbacks: {
     authorized({ auth, request: { nextUrl } }) {
       const isLoggedIn = !!auth?.user;
+      
+      // 1. DEFINE ZONES
       const isOnDashboard = nextUrl.pathname.startsWith('/dashboard');
       const isOnFlow = nextUrl.pathname.startsWith('/flow');
       const isOnPortal = nextUrl.pathname.startsWith('/portal');
-      const isOnPublic = !nextUrl.pathname.startsWith('/(app)') && !nextUrl.pathname.startsWith('/api');
+      
+      // explicit whitelist (The "Skin")
+      const publicRoutes = ['/', '/about', '/courses', '/enroll', '/live-map', '/login'];
+      const isPublicRoute = publicRoutes.some(route => 
+        nextUrl.pathname === route || nextUrl.pathname.startsWith(route + '/')
+      );
 
-      // 1. Redirect Unauthenticated Users
+      // 2. UNAUTHENTICATED HANDLING
       if (!isLoggedIn) {
-        // Allow public routes (landing, enroll, live-map)
-        if (isOnPublic) return true;
+        if (isPublicRoute) return true; // Let them browse
         return false; // Redirect to /login
       }
 
-      // 2. Role-Based Redirects (The Immune System)
-      const role = (auth.user as any).role || 'STUDENT'; // Default to safest role
+      // 3. AUTHENTICATED ROUTING (The Immune System)
+      const role = (auth.user as any).role || 'STUDENT';
 
-      // A. STUDENTS
+      // A. STUDENTS -> Portal Only
       if (role === 'STUDENT') {
         if (isOnPortal) return true;
-        // Redirect Student to Portal if they try to go anywhere else
         return Response.redirect(new URL('/portal', nextUrl));
       }
 
-      // B. TEACHERS
+      // B. TEACHERS -> Flow & Directory
       if (role === 'TEACHER') {
-        // Teachers belong in Flow or specific Student views
         if (isOnFlow || nextUrl.pathname.startsWith('/students')) return true;
-        // Redirect Teacher to Flow HUD if they try to go to Finance/Dashboard
+        // Block from Admin Dashboard / Finance
         if (isOnDashboard || nextUrl.pathname.startsWith('/finance')) {
-            return Response.redirect(new URL('/flow', nextUrl));
+             return Response.redirect(new URL('/flow', nextUrl));
         }
         return true;
       }
 
-      // C. ADMINS
+      // C. ADMINS -> Everywhere
       if (role === 'ADMIN') {
-        return true; // Admins go everywhere
+        return true;
       }
 
       return true;

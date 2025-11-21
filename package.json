@@ -23,6 +23,8 @@
     "@mantine/notifications": "latest",
     "@prisma/adapter-pg": "^7.0.0",
     "@prisma/client": "latest",
+    "@types/bcryptjs": "^2.4.6",
+    "bcryptjs": "^3.0.3",
     "clsx": "latest",
     "date-fns": "latest",
     "dayjs": "latest",
