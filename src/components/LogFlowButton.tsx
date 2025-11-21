@@ -12,8 +12,8 @@ export function LogFlowButton({ studentId }: { studentId: string }) {
   const handleLog = async (score: number, label: string) => {
     setLoading(true);
     
-    // FIX: We removed the 3rd argument (state). 
-    // The server action now automatically calculates 'ANXIETY' vs 'FLOW' based on the score.
+    // FIX: We removed the 3rd argument. 
+    // The Server Action now automatically determines if it's 'Anxiety' or 'Flow'.
     const result = await logFlowState(studentId, score);
     
     setLoading(false);
