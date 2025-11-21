@@ -1,6 +1,6 @@
 import { Container, Title, Text, Button, Paper, Stack, ThemeIcon } from '@mantine/core';
 import { ArrowRight, Building2, UserCheck } from 'lucide-react';
-import { LinkButton } from '@/components/LinkButton'; // <--- NEW IMPORT
+import LinkButton from '@/components/LinkButton'; // <--- CHANGED: Default Import
 
 export default function GatewayPage() {
   return (
@@ -50,7 +50,7 @@ export default function GatewayPage() {
           </Stack>
           
           <Text c="dimmed" size="xs" ta="center" mt="xl">
-            v0.4 (The Synapse) • System Operational
+            v0.4.2 (The Synapse) • System Operational
           </Text>
         </Paper>
       </Container>

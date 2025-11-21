@@ -2,7 +2,7 @@ import { prisma } from '@/lib/prisma';
 import { auth } from '@/auth';
 import { Container, Title, Text, Group, Card, SimpleGrid, Badge } from '@mantine/core';
 import { BrainCircuit, Wallet, GraduationCap } from 'lucide-react';
-import { LinkButton } from '@/components/LinkButton'; // <--- NEW IMPORT
+import LinkButton from '@/components/LinkButton'; // <--- CHANGED: Default Import (No curly braces)
 
 export const dynamic = 'force-dynamic';
 
@@ -61,7 +61,6 @@ export default async function StudentPortalPage() {
             Access your personal AI Shard for cognitive support and tutoring.
           </Text>
           
-          {/* FIX: Using LinkButton to avoid serialization error */}
           <LinkButton 
             href={`/students/${student.id}/chat`} 
             fullWidth 
