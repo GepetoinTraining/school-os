@@ -14,19 +14,20 @@ export const authConfig = {
       const isOnFlow = nextUrl.pathname.startsWith('/flow');
       const isOnPortal = nextUrl.pathname.startsWith('/portal');
       
-      // explicit whitelist (The "Skin")
-      const publicRoutes = ['/', '/about', '/courses', '/enroll', '/live-map', '/login'];
+      // 2. EXPANDED WHITELIST (The Skin)
+      // Added '/home' and kept '/' open for the Gateway
+      const publicRoutes = ['/', '/home', '/about', '/courses', '/enroll', '/live-map', '/login'];
       const isPublicRoute = publicRoutes.some(route => 
         nextUrl.pathname === route || nextUrl.pathname.startsWith(route + '/')
       );
 
-      // 2. UNAUTHENTICATED HANDLING
+      // 3. UNAUTHENTICATED HANDLING
       if (!isLoggedIn) {
-        if (isPublicRoute) return true; // Let them browse
+        if (isPublicRoute) return true; // Allow Gateway & Landing
         return false; // Redirect to /login
       }
 
-      // 3. AUTHENTICATED ROUTING (The Immune System)
+      // 4. AUTHENTICATED ROUTING (The Immune System)
       const role = (auth.user as any).role || 'STUDENT';
 
       // A. STUDENTS -> Portal Only
