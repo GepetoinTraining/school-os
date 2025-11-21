@@ -1,76 +1,75 @@
-Agent Directive: Immediate Execution Phase
+Agent Directive: Phase II - Deep Logic & Integration
 
-Context: Post-negotiation decompression. Transitioning from "Concept" to "Codebase."
-Status: Architecture frozen. Wireframing initiated.
+Context: Alpha Milestone Achieved. The "Skin" and "Skeleton" are complete. The system is navigable, visually consistent, and connected to the local database.
+Status: UI Complete. Database Connected. Seeding Active.
 
-I. Immediate Priorities (The Next 48 Hours)
+I. Completed Objectives (Alpha Phase)
 
-1. The Foundation (Backend)
+[x] Foundation: Next.js 14 + Mantine + Prisma (Library Engine) + Postgres.
+[x] Architecture: AppShell, Global Layout, Dynamic Routing.
+[x] Core Modules:
+    - Cockpit (Financial + Vital Signs)
+    - Student Directory (List + Filters)
+    - Student 360 (VARK + Financials + Shard Status)
+    - Symbiosis Engine (AI Shard Visualization)
+    - Network (Referral Tree Tracking)
+    - Financial Ledger (Lucro Real)
+[x] Identity: Login Gate (UI).
+[x] Governance: Settings & Franchise Shield (UI).
 
-[x] Initialize Repo: Set up Next.js + Tailwind + Firebase/Postgres hybrid.
+II. Immediate Priorities (Phase II: The Nervous System)
 
-[x] Seed the Schema: Run prisma db push using the handover.schema.prisma.
+1. Data Ingestion (The Migration)
+[ ] CSV Mapper: Create a drag-and-drop zone in `/settings` to ingest the legacy franchise student list (CSV).
+[ ] Data Normalization: Map legacy fields to our `Student` schema.
 
-[ ] Auth Gate: Build the Login screen with Role-Based Access Control (RBAC) stubbed out (Director vs. Teacher views).
+2. The Flow Engine (Real-Time Logging)
+[ ] Flow Input: Create a mobile-optimized view for Teachers to log "Flow State" (Score 1-10) for a student in real-time during class.
+[ ] Connection: Hook this up to the `FlowLog` table.
 
-2. The Visuals (Frontend Wireframes)
+3. Security & RBAC
+[ ] Middleware: Implement NextAuth.js to actually protect the routes (currently just a UI gate).
+[ ] Roles: Ensure "Teacher" role sees a simplified HUD, while "Director" sees the full Cockpit.
 
-[ ] Assemble Components: Take the React artifacts (v1-v17) and componentize them into a shared /components folder.
+III. Operational Notes
 
-[x] The Shell: Build the SchoolOS.jsx sidebar and layout shell to host the modules.
+- Database Engine: We are strictly using the `library` engine for Prisma to ensure local sovereignty.
+- Components: All UI elements are client-side (`use client`) where interaction is needed, wrapped in server-side data fetchers.
+- Type Safety: We are manually typing some Prisma returns to ensure strictness with the UI components.
 
-[x] The Dashboard: Implement the "Cockpit" view (Financials + Enrollment) as the landing page.
+# SYSTEM HANDOVER: SchoolOS v0.1 (Alpha)
 
-3. The Franchise Shield (Data Ops)
+**Timestamp:** 2025-11-21
+**Location:** Balneário Camboriú
+**Status:** Alpha Complete (UI + DB Connected)
 
-[ ] Sanitization Protocol: Design the export script that will eventually send "dumb" data to Phenom Idiomas while keeping the "smart" data (VARK, Network, Shards) local.
+## 1. The Architecture
+- **Frontend:** Next.js 14 (App Router), Mantine v7 UI.
+- **Backend:** Prisma ORM (Library Engine), PostgreSQL.
+- **State:** Server Components fetch data, Client Components render UI.
 
-II. Critical Questions to Resolve
+## 2. Current Capabilities
+| Module | Status | Description |
+| :--- | :--- | :--- |
+| **Cockpit** | 🟢 Live | Tracks Net Revenue (Lucro Real), Student Count, and Resonance. |
+| **Students** | 🟢 Live | Directory of all "Human Nodes" with risk status. |
+| **Profile** | 🟢 Live | Deep dive into VARK DNA, Financials, and Shard status. |
+| **Ledger** | 🟢 Live | Immutable log of every cent (Income vs Expense). |
+| **Symbiosis** | 🟢 Live | Visualization of AI Models (Shards) attached to students. |
+| **Network** | 🟢 Live | Analysis of the "Bruno Effect" (Referral Tree). |
 
-Hosting: Are we running the "Server in the Room" (Local Metal) immediately, or cloud-first with a sync down? Recommendation: Cloud-first for speed, Local mirror for sovereignty.
+## 3. The Data (Seed)
+The database is currently seeded with 4 Archetypes:
+1.  **Alice:** High Academic, Stable Financials.
+2.  **Bruno:** Low Academic, High Social Capital (Referrals).
+3.  **Prof. Julia:** Creative Archetype, Low Efficiency.
+4.  **Prof. Elena:** Academic Archetype, High Leverage.
 
-Migration: How do we ingest current student data from the franchise system? We need a CSV mapper.
+## 4. Next Steps (Phase II)
+1.  **Ingestion:** Build the CSV Importer to replace seed data with real franchise data.
+2.  **Auth:** Implement NextAuth.js for secure Role-Based Access.
+3.  **Flow:** Build the "Teacher HUD" for real-time classroom logging.
 
-III. The "Seed" Concept
-
-We will create a seed.js that populates the database not with "Lorem Ipsum", but with the Archetypes we discussed:
-
-Student: Bruno (High Social / Low Academic)
-
-Student: Alice (High Academic / Low Social)
-
-Teacher: Prof. Julia (High NPS / Low Efficiency)
-
-Partner: RoboKids (Liability)
-
-Why: Seeing these specific characters in the dev environment will keep the "Soul" of the system alive during the boring coding phases.
-
-Directive: Focus on the Ledger first. Money is the oxygen. If the Ledger works, the organism lives.
-
-SYSTEM HANDOVER: SchoolOS
-
-Current State:
-
-Repo: Next.js 14 (App Router) + TypeScript.
-
-UI: Mantine v7 (Tailwind removed).
-
-DB: Prisma + Vercel Postgres.
-
-Status: Project initialized, dependencies installed, DB schema pushed, Seed script run (Alice & Bruno exist).
-
-The Goal:
-We are building SchoolOS, a "Metasystem" for education that tracks Financial Yield, Human Capital, and Cognitive Development.
-We are moving away from Canva/Wireframes to direct code implementation.
-
-The Architecture:
-
-Ledger: Tracks "Lucro Real" (Tax/Commission splits).
-
-Symbiosis: Tracks "AI Shards" assigned to students.
-
-Network: Tracks the "Bruno Effect" (Referrals vs. Academic Risk).
-
-Next Task:
-Build the Mantine AppShell. We need the Sidebar navigation and the main Dashboard Grid layout.
-Ref: handover.schema.prisma is the source of truth for data.
+## 5. Technical Debt / Notes
+- **Prisma Engine:** We are forcing `engineType = "library"` to avoid Wasm/Edge errors and maintain data sovereignty.
+- **Type Safety:** Some `ts-expect-error` directives were removed in favor of explicit type casting (`as StudentWithUser`).
