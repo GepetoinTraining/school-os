@@ -5,26 +5,30 @@ export const authConfig = {
     signIn: '/login',
     error: '/login',
   },
-  // FIX: Explicitly force JWT here so Middleware knows what to look for
+  // CRITICAL: Force JWT strategy here so Middleware knows what to expect.
+  // This prevents the adapter (in auth.ts) from implicitly switching to database sessions.
   session: { strategy: 'jwt' },
   callbacks: {
     authorized({ auth, request: { nextUrl } }) {
       const isLoggedIn = !!auth?.user;
-      const isOnDashboard = nextUrl.pathname.startsWith('/dashboard');
-      const isOnFlow = nextUrl.pathname.startsWith('/flow');
-      const isOnPortal = nextUrl.pathname.startsWith('/portal');
       
       const publicRoutes = ['/', '/home', '/about', '/courses', '/enroll', '/live-map', '/login'];
       const isPublicRoute = publicRoutes.some(route => 
         nextUrl.pathname === route || nextUrl.pathname.startsWith(route + '/')
       );
 
+      // 1. Redirect unauthenticated users to login (unless on public route)
       if (!isLoggedIn) {
         if (isPublicRoute) return true;
-        return false;
+        return false; // Triggers redirect to /login
       }
 
+      // 2. Role-Based Redirects
+      // Safe access: cast to any to avoid TS errors before types are fully loaded
       const role = (auth.user as any).role || 'STUDENT';
+      const isOnDashboard = nextUrl.pathname.startsWith('/dashboard');
+      const isOnFlow = nextUrl.pathname.startsWith('/flow');
+      const isOnPortal = nextUrl.pathname.startsWith('/portal');
 
       if (role === 'STUDENT') {
         if (isOnPortal) return true;
@@ -43,20 +47,29 @@ export const authConfig = {
 
       return true;
     },
-    jwt({ token, user }) {
+    async jwt({ token, user }) {
+      // Initial sign in: user object is available
       if (user) {
         token.role = (user as any).role;
         token.id = user.id;
+        
+        // REACT 19 FIX: Sanitize Date objects immediately.
+        // Passing raw Date objects to Client Components causes serialization crashes.
+        token.createdAt = (user as any).createdAt?.toISOString?.() ?? new Date().toISOString();
       }
       return token;
     },
-    session({ session, token }) {
+    async session({ session, token }) {
       if (session.user) {
+        // Map token data to session
         (session.user as any).role = token.role;
         (session.user as any).id = token.id;
+        
+        // Ensure the client receives a string, not a Date object
+        (session.user as any).createdAt = token.createdAt;
       }
       return session;
     },
   },
-  providers: [],
+  providers: [], // Keep empty for Middleware compatibility
 } satisfies NextAuthConfig;
